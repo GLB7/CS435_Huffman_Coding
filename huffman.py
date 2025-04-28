@@ -11,7 +11,27 @@ def frequency_table(st: str) -> None:
     Output:
         Print each character along with its corresponding frequency.
     """
-    print("Character Frequencies:\n'a': 1\n...\n")
+
+    #For this problem we literally cannot do anything that isn't O(n)
+    #The problem does not assume that it contains numeric or any other characters.
+    #For the beginning implementation, let's assume it's just lowercase letters.
+
+    #This simply creates the table
+    freq_table = {};
+
+    for letter in range(26):
+        freq_table[chr(97+letter)] = 0;
+    
+    #Loop through the word
+    for char in st:
+        freq_table[char] += 1
+    
+    #Print Frequencies once done.
+    print("Character Frequencies:\n")
+
+    for key, val in freq_table.items():
+        print('\''+key+'\': '+str(val)+'\n');
+
 
 # Part b
 def Huffman_code(st: str) -> None:
