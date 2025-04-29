@@ -11,26 +11,23 @@ def frequency_table(st: str) -> None:
     Output:
         Print each character along with its corresponding frequency.
     """
+    # Example of this initalized table on Greedy Method 1 Slide 36
+    frequency_table: dict[str, int] = {}
 
-    #For this problem we literally cannot do anything that isn't O(n)
-    #The problem does not assume that it contains numeric or any other characters.
-    #For the beginning implementation, let's assume it's just lowercase letters.
-
-    #This simply creates the table
-    freq_table = {};
-
-    for letter in range(26):
-        freq_table[chr(97+letter)] = 0;
-    
-    #Loop through the word
+    # Loop through all characters in given string to fill the frequency table.
+    # If a character already exists in the table increment the count, else make a new entry for it starting at 1.
     for char in st:
-        freq_table[char] += 1
-    
-    #Print Frequencies once done.
-    print("Character Frequencies:\n")
+        if char in frequency_table:
+            frequency_table[char] += 1
+        else:
+            frequency_table[char] = 1
 
-    for key, val in freq_table.items():
-        print('\''+key+'\': '+str(val)+'\n');
+    # Print the characters from the frequency table in sorted order (based on char).
+    # repr() function allows for special characters like space to be represented.
+    print("Character Frequencies:")
+    for char in sorted(frequency_table):
+        print(f"{repr(char)}: {frequency_table[char]}")
+
 
 
 # Part b
@@ -88,15 +85,9 @@ def Huffman_decode(bst: str, tree: object) -> None:
     print("Decoded String:\nabbccdddd")
 
 def main():
-    st = "abbcccdddd"
+    # This string example is from slide 36
+    st = "a fast runner need never be afraid of the dark"
     frequency_table(st)
-    codes = {"a": "000", "b": "001", "c": "01", "d": "1"}
-    Huffman_code(st)
-    Huffman_encode(st, codes)
-    L = [('a', '000'), ('b', '001'), ('c', '01'), ('d', '1')]
-    tree = Huffman_tree(L)
-    bst = "0000010010010101011111"
-    Huffman_decode(bst, tree)
 
 if __name__ == "__main__":
     main()
