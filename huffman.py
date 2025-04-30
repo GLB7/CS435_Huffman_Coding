@@ -99,8 +99,10 @@ def Huffman_encode(st: str, codes: dict) -> None:
     Output:
         Print the binary-encoded string using the Huffman codes. 
     """
-    print("Encoded String:\n0000010010010101011111\n")
-
+    full_encode = ""
+    for c in st:
+        full_encode += codes[c]
+    print(full_encode)
 
 # Part d
 def Huffman_tree(L: list):
