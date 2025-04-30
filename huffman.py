@@ -1,4 +1,24 @@
 # Brian Ochoa (beo3), Giovani Bergamasco (glb7), Victor Sima (vs77)
+import heapq
+
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None, c=''):
+        self.val = val
+        self.left = left
+        self.right = right
+        self.c = c
+    
+    # Apparently we need this for heapq
+    def __lt__(self, other):
+        return self.val < other.val
+
+def inorderTraversal(root, encoding):
+    if(root==None):
+        return
+    inorderTraversal(root.left, encoding+"0")
+    if root.c:
+        print(root.c, ":", encoding)
+    inorderTraversal(root.right, encoding+"1")
 
 # Part a
 def frequency_table(st: str) -> None:
@@ -11,26 +31,16 @@ def frequency_table(st: str) -> None:
     Output:
         Print each character along with its corresponding frequency.
     """
-
-    #For this problem we literally cannot do anything that isn't O(n)
-    #The problem does not assume that it contains numeric or any other characters.
-    #For the beginning implementation, let's assume it's just lowercase letters.
-
-    #This simply creates the table
-    freq_table = {};
-
-    for letter in range(26):
-        freq_table[chr(97+letter)] = 0;
+    # Make a hashmap for frequency table
+    freq_table = {}
+    for c in st:
+        if c not in freq_table:
+            freq_table[c] = 1
+        else:
+            freq_table[c] +=1
+    for key in freq_table:
+        print("Character: " + key + " Frequency: " + str(freq_table[key]))
     
-    #Loop through the word
-    for char in st:
-        freq_table[char] += 1
-    
-    #Print Frequencies once done.
-    print("Character Frequencies:\n")
-
-    for key, val in freq_table.items():
-        print('\''+key+'\': '+str(val)+'\n');
 
 
 # Part b
@@ -44,7 +54,39 @@ def Huffman_code(st: str) -> None:
     Output:
         Print the Huffman code for each character in the string. 
     """
-    print("Huffman Codes:\n'a': 000\n...\n")
+    # Make Frequency Table of characters
+    freq_table = {}
+
+    # O(n) where n is length of string
+    for c in st:
+        if c not in freq_table:
+            freq_table[c] = 1
+        else:
+            freq_table[c] +=1
+    
+    # Make a tree node for every character, we want a heap of tree nodes
+    tree_nodes = []
+    for key in freq_table:
+        heapq.heappush(tree_nodes, TreeNode(freq_table[key], c=key))
+
+    while len(tree_nodes)>1:
+        c1 = heapq.heappop(tree_nodes)
+        c2 = heapq.heappop(tree_nodes)
+        
+        # If c1 is new node, add it on the right
+        if c1.c !='' and c2.c =='':
+            heapq.heappush(tree_nodes, TreeNode(c1.val + c2.val, left=c2, right = c1))
+
+        # Else, then c2 is a new node, add it on right
+        else:
+            heapq.heappush(tree_nodes, TreeNode(c1.val + c2.val, left=c1, right = c2))
+    
+    # Last node in tree_nodes is root
+    root = heapq.heappop(tree_nodes)
+
+    # Traverse the tree to print huffman codes for every character
+    inorderTraversal(root, "")
+
 # Part c
 def Huffman_encode(st: str, codes: dict) -> None:
     """
@@ -89,9 +131,12 @@ def Huffman_decode(bst: str, tree: object) -> None:
 
 def main():
     st = "abbcccdddd"
+    st2 = "a fast runner need never be afraid of the dark"
     frequency_table(st)
     codes = {"a": "000", "b": "001", "c": "01", "d": "1"}
     Huffman_code(st)
+    print("\n")
+    Huffman_code(st2)
     Huffman_encode(st, codes)
     L = [('a', '000'), ('b', '001'), ('c', '01'), ('d', '1')]
     tree = Huffman_tree(L)
