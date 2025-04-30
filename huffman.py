@@ -87,20 +87,16 @@ def Huffman_code(st: str) -> None:
     root = nTree_nodes.pop();
     huffman_code = tree_traversal(root, "", {}, None)
     print(huffman_code)
-    #print("Huffman Codes:\n'a': 000\n...\n")
-
 
 def tree_traversal(root:HuffmanNode, encoding: str, e_table: dict, parent: tuple):
     if root is None:
         return e_table
 
-
-    tree_traversal(root.left, encoding+"0", e_table, parent)
-
     if root.char is not None:
         e_table[root.char] = encoding
         return e_table
 
+    tree_traversal(root.left, encoding+"0", e_table, parent)
     tree_traversal(root.right, encoding+"1", e_table, parent)
 
     return e_table
