@@ -1,4 +1,32 @@
 # Brian Ochoa (beo3), Giovani Bergamasco (glb7), Victor Sima (vs77)
+import heapq
+
+class PriorityQueue:
+    def __init__(self):
+        self._queue = []
+        self._index = 0
+    
+    def push (self, item, priority):
+        heapq.heappush(self._queue, (priority, self._index, item))
+        self._index += 1
+    
+    def pop(self):
+        return heapq.heappop(self._queue)[-1]
+    
+    def __len__(self):
+        return len(self._queue)
+
+class HuffmanNode:
+    def __init__(self, char, freq, left=None, right=None):
+        self.char = char
+        self.freq = freq
+        self.left = left
+        self.right = right
+    
+    def __lt__(self, other):
+        if self.freq == other.freq:
+            return (self.char or "") < (other.char or "")
+        return self.freq < other.freq
 
 # Part a
 def frequency_table(st: str) -> None:
@@ -16,21 +44,24 @@ def frequency_table(st: str) -> None:
     #The problem does not assume that it contains numeric or any other characters.
     #For the beginning implementation, let's assume it's just lowercase letters.
 
+    #Implemented Gio's version of the table below:
+
     #This simply creates the table
-    freq_table = {};
+    frequency_table: dict[str, int] = {}
 
-    for letter in range(26):
-        freq_table[chr(97+letter)] = 0;
-    
-    #Loop through the word
+    # Loop through all characters in given string to fill the frequency table.
+    # If a character already exists in the table increment the count, else make a new entry for it starting at 1.
     for char in st:
-        freq_table[char] += 1
-    
-    #Print Frequencies once done.
-    print("Character Frequencies:\n")
+        if char in frequency_table:
+            frequency_table[char] += 1
+        else:
+            frequency_table[char] = 1
 
-    for key, val in freq_table.items():
-        print('\''+key+'\': '+str(val)+'\n');
+    # Print the characters from the frequency table in sorted order (based on char).
+    # repr() function allows for special characters like space to be represented.
+    print("Character Frequencies:")
+    for char in sorted(frequency_table):
+        print(f"{repr(char)}: {frequency_table[char]}")
 
 
 # Part b
@@ -44,7 +75,51 @@ def Huffman_code(st: str) -> None:
     Output:
         Print the Huffman code for each character in the string. 
     """
-    print("Huffman Codes:\n'a': 000\n...\n")
+
+    frequency_table: dict[str, int] = {}
+    
+    for char in st:
+        if char in frequency_table:
+            frequency_table[char] += 1
+        else:
+            frequency_table[char] = 1
+
+
+    nTree_nodes = PriorityQueue()
+
+    for char, freq in frequency_table.items():
+        nTree_nodes.push(HuffmanNode(char, freq), freq)
+
+    while len(nTree_nodes) > 1:
+
+        left_subtree = nTree_nodes.pop()
+        right_subtree = nTree_nodes.pop()
+
+        merged_freq = left_subtree.freq + right_subtree.freq
+
+        nTree_nodes.push(HuffmanNode(None, merged_freq, left_subtree, right_subtree), merged_freq);
+
+    root = nTree_nodes.pop();
+    huffman_code = tree_traversal(root, "", {}, None)
+    print(huffman_code)
+    #print("Huffman Codes:\n'a': 000\n...\n")
+
+
+def tree_traversal(root:HuffmanNode, encoding: str, e_table: dict, parent: tuple):
+   if root is None:
+       return e_table
+
+   if root.char is not None:
+       e_table[root.char] = encoding
+       return e_table
+
+   tree_traversal(root.left, encoding+"0", e_table, parent)
+   tree_traversal(root.right, encoding+"1", e_table, parent)
+
+   return e_table
+
+   
+
 # Part c
 def Huffman_encode(st: str, codes: dict) -> None:
     """
@@ -89,9 +164,12 @@ def Huffman_decode(bst: str, tree: object) -> None:
 
 def main():
     st = "abbcccdddd"
+    test_str = "aaabbbbbccdddddddd"
     frequency_table(st)
+    frequency_table(test_str)
     codes = {"a": "000", "b": "001", "c": "01", "d": "1"}
     Huffman_code(st)
+    Huffman_code(test_str)
     Huffman_encode(st, codes)
     L = [('a', '000'), ('b', '001'), ('c', '01'), ('d', '1')]
     tree = Huffman_tree(L)
