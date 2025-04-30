@@ -80,9 +80,9 @@ def Huffman_code(st: str) -> None:
         merged_freq = left_subtree.freq + right_subtree.freq
 
         if (left_subtree.char is not None) and (right_subtree.char is not None):
-            heapq.heappush(nTree_nodes, HuffmanNode(None, merged_freq, right_subtree, left_subtree))
-        else:
             heapq.heappush(nTree_nodes, HuffmanNode(None, merged_freq, left_subtree, right_subtree))
+        else:
+            heapq.heappush(nTree_nodes, HuffmanNode(None, merged_freq, right_subtree, left_subtree))
 
     root = nTree_nodes.pop();
     huffman_code = tree_traversal(root, "", {}, None)
