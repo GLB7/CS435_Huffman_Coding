@@ -1,21 +1,5 @@
 # Brian Ochoa (beo3), Giovani Bergamasco (glb7), Victor Sima (vs77)
 import heapq
-
-class PriorityQueue:
-    def __init__(self):
-        self._queue = []
-        self._index = 0
-    
-    def push (self, item, priority):
-        heapq.heappush(self._queue, (priority, self._index, item))
-        self._index += 1
-    
-    def pop(self):
-        return heapq.heappop(self._queue)[-1]
-    
-    def __len__(self):
-        return len(self._queue)
-
 class HuffmanNode:
     def __init__(self, char, freq, left=None, right=None):
         self.char = char
@@ -24,8 +8,6 @@ class HuffmanNode:
         self.right = right
     
     def __lt__(self, other):
-        if self.freq == other.freq:
-            return (self.char or "") < (other.char or "")
         return self.freq < other.freq
 
 # Part a
@@ -85,19 +67,22 @@ def Huffman_code(st: str) -> None:
             frequency_table[char] = 1
 
 
-    nTree_nodes = PriorityQueue()
+    nTree_nodes = []
 
     for char, freq in frequency_table.items():
-        nTree_nodes.push(HuffmanNode(char, freq), freq)
+        heapq.heappush(nTree_nodes, HuffmanNode(char, freq))
 
     while len(nTree_nodes) > 1:
 
-        left_subtree = nTree_nodes.pop()
-        right_subtree = nTree_nodes.pop()
+        left_subtree = heapq.heappop(nTree_nodes)
+        right_subtree = heapq.heappop(nTree_nodes)
 
         merged_freq = left_subtree.freq + right_subtree.freq
 
-        nTree_nodes.push(HuffmanNode(None, merged_freq, left_subtree, right_subtree), merged_freq);
+        if (left_subtree.char is not None) and (right_subtree.char is not None):
+            heapq.heappush(nTree_nodes, HuffmanNode(None, merged_freq, right_subtree, left_subtree))
+        else:
+            heapq.heappush(nTree_nodes, HuffmanNode(None, merged_freq, left_subtree, right_subtree))
 
     root = nTree_nodes.pop();
     huffman_code = tree_traversal(root, "", {}, None)
@@ -106,17 +91,19 @@ def Huffman_code(st: str) -> None:
 
 
 def tree_traversal(root:HuffmanNode, encoding: str, e_table: dict, parent: tuple):
-   if root is None:
-       return e_table
+    if root is None:
+        return e_table
 
-   if root.char is not None:
-       e_table[root.char] = encoding
-       return e_table
 
-   tree_traversal(root.left, encoding+"0", e_table, parent)
-   tree_traversal(root.right, encoding+"1", e_table, parent)
+    tree_traversal(root.left, encoding+"0", e_table, parent)
 
-   return e_table
+    if root.char is not None:
+        e_table[root.char] = encoding
+        return e_table
+
+    tree_traversal(root.right, encoding+"1", e_table, parent)
+
+    return e_table
 
    
 
