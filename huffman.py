@@ -163,7 +163,7 @@ def Huffman_tree(L: list):
 
 
 # Part e
-def Huffman_decode(bst: str, tree: unknownHuffmanNode) -> None:
+def Huffman_decode(bst: str, tree: object) -> None:
     """
     Decodes the binary-encoded text bst back into its original string using the Huffman tree.
 
