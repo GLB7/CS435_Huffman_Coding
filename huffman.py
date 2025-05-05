@@ -179,8 +179,8 @@ def Huffman_decode(bst: str, tree: object) -> None:
     root = tree
     node = root
 
-    for bit in bst:
-        if bit == '0':
+    for path in bst:
+        if path == '0':
             node = node.left
         else:
             node = node.right
