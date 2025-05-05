@@ -10,6 +10,15 @@ class HuffmanNode:
     def __lt__(self, other):
         return self.freq < other.freq
 
+#Created this class as a version of the huffman tree, where we do not know any frequencies.
+#Therefore since we don't know any data it is 'unknown'.
+
+class unknownHuffmanNode:
+    def __init__(self):
+        self.char = None
+        self.left = None
+        self.right = None
+
 # Part a
 def frequency_table(st: str) -> None:
     """
@@ -47,7 +56,7 @@ def frequency_table(st: str) -> None:
 
 
 # Part b
-def Huffman_code(st: str) -> None:
+def Huffman_code(st: str):
     """
     Builds a Huffman tree from the string st and generates the Huffman codes for each character. Print each character with its corresponding code.
 
@@ -87,6 +96,7 @@ def Huffman_code(st: str) -> None:
     root = nTree_nodes.pop();
     huffman_code = tree_traversal(root, "", {}, None)
     print(huffman_code)
+    return huffman_code
 
 def tree_traversal(root:HuffmanNode, encoding: str, e_table: dict, parent: tuple):
     if root is None:
@@ -104,7 +114,7 @@ def tree_traversal(root:HuffmanNode, encoding: str, e_table: dict, parent: tuple
    
 
 # Part c
-def Huffman_encode(st: str, codes: dict) -> None:
+def Huffman_encode(st: str, codes: dict):
     """
     Prints the binary encoded version of st, based on the Huffman codes generated in part (b) codes.
 
@@ -115,7 +125,11 @@ def Huffman_encode(st: str, codes: dict) -> None:
     Output:
         Print the binary-encoded string using the Huffman codes. 
     """
-    print("Encoded String:\n0000010010010101011111\n")
+    encode = ""
+    for char in st:
+        encode += codes[char]
+    print("Encoded String: "+encode+"\n")
+    return encode
 
 
 # Part d
@@ -129,10 +143,27 @@ def Huffman_tree(L: list):
     Output:
         Return the Huffman tree constructed from the list. 
     """
-    pass
+
+    root = unknownHuffmanNode()
+
+    for char, code in L:
+        node = root
+        for path in code:
+            if path == '0':
+                if not node.left:
+                    node.left = unknownHuffmanNode()
+                node = node.left
+            else:
+                if not node.right:
+                    node.right = unknownHuffmanNode()
+                node = node.right
+        node.char = char 
+    
+    return root
+
 
 # Part e
-def Huffman_decode(bst: str, tree: object) -> None:
+def Huffman_decode(bst: str, tree: unknownHuffmanNode) -> None:
     """
     Decodes the binary-encoded text bst back into its original string using the Huffman tree.
 
@@ -143,21 +174,66 @@ def Huffman_decode(bst: str, tree: object) -> None:
     Output:
         Prints the decoded string.
     """
-    print("Decoded String:\nabbccdddd")
+    decoded_string = ""
+
+    root = tree
+    node = root
+
+    for bit in bst:
+        if bit == '0':
+            node = node.left
+        else:
+            node = node.right
+        
+        if not node.left and not node.right:
+            decoded_string += node.char
+            node = root
+    
+    print(decoded_string)
+    
 
 def main():
-    st = "abbcccdddd"
-    test_str = "aaabbbbbccdddddddd"
+    st = "abbcccdddd" #example from assignment
+    test_str = "a fast runner need never be afraid of the dark" #slide examples
+    test_str2 = "Time to party like it's 2033." #Johnny Silverhand's famous slogan
+    part1 = "I'd like to share a revelation that I've had during my time here."
+    part2 = "It came to me when I tried to classify your species and I realized that you're not actually mammals. " 
+    part3 = "Every mammal on this planet instinctively develops a natural equilibrium with the surrounding environment but you humans do not."
+    test_str3 = part1 + part2 + part3 #Kudos if you know this one.
+
+
     frequency_table(st)
     frequency_table(test_str)
+    frequency_table(test_str2)
+    frequency_table(test_str3)
     codes = {"a": "000", "b": "001", "c": "01", "d": "1"}
+
     Huffman_code(st)
-    Huffman_code(test_str)
+    test1 = Huffman_code(test_str)
+    test2 = Huffman_code(test_str2)
+    test3 = Huffman_code(test_str3)
+
+    huffmanTest1 = list(test1.items())
+    huffmanTest2 = list(test2.items())
+    huffmanTest3 = list(test3.items())
+
     Huffman_encode(st, codes)
+    Huffman_encode(test_str, test1)
+    Huffman_encode(test_str2, test2)
+    bst = Huffman_encode(test_str3, test3)
+
     L = [('a', '000'), ('b', '001'), ('c', '01'), ('d', '1')]
+    L2 = huffmanTest1
+    L3 = huffmanTest2
+    L4 = huffmanTest3
+
+
     tree = Huffman_tree(L)
-    bst = "0000010010010101011111"
-    Huffman_decode(bst, tree)
+    tree2 = Huffman_tree(L2)
+    tree3 = Huffman_tree(L3)
+    tree4 = Huffman_tree(L4)
+
+    Huffman_decode(bst, tree4)
 
 if __name__ == "__main__":
     main()
